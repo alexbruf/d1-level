@@ -4,8 +4,8 @@ import { buildClearSQL } from './utils.js'
 import type { RangeOptions } from './utils.js'
 
 export interface D1LevelOptions {
-  /** Cloudflare D1 database binding from Worker env */
-  d1: D1Database
+  /** Cloudflare D1 database binding or lazy getter (defers I/O past module init) */
+  d1: D1Database | (() => D1Database)
   /** Table name prefix. Empty (default) → table 'kv'; 'tina' → table 'tina_kv' */
   namespace?: string
   /** Auto-create table on open. Default: true */
@@ -16,14 +16,24 @@ export interface D1LevelOptions {
 type Cb = (err: Error | null) => void
 
 export class D1Level extends AbstractLevel<string, string, string> {
-  readonly #d1: D1Database
+  readonly #d1Raw: D1Database | (() => D1Database)
   readonly #table: string
   readonly #createTable: boolean
 
+  /** Resolve d1 — if a lazy getter was provided, call it each time. */
+  get #d1(): D1Database {
+    return typeof this.#d1Raw === 'function' ? this.#d1Raw() : this.#d1Raw
+  }
+
   constructor(options: D1LevelOptions) {
     const { d1, namespace, createTable = true, ...rest } = options
+    // When a lazy getter is provided, default autoOpen to false —
+    // D1 I/O can't run at Workers module init time.
+    if (typeof d1 === 'function' && !('autoOpen' in rest)) {
+      (rest as any).autoOpen = false
+    }
     super({ encodings: { utf8: true }, snapshots: false }, rest)
-    this.#d1 = d1
+    this.#d1Raw = d1
     this.#table = namespace ? `${namespace}_kv` : 'kv'
     this.#createTable = createTable
   }
