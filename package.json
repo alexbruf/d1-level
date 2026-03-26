@@ -1,0 +1,46 @@
+{
+  "name": "@alexbruf/d1-level",
+  "version": "0.1.0",
+  "description": "An abstract-level database backed by Cloudflare D1",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "abstract-level": "^1.0.4"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.12.0",
+    "@cloudflare/workers-types": "^4.0.0",
+    "@types/better-sqlite3": "^7.6.0",
+    "better-sqlite3": "^11.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "3.2.4"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alexbruf/d1-level.git"
+  },
+  "homepage": "https://github.com/alexbruf/d1-level#readme",
+  "bugs": {
+    "url": "https://github.com/alexbruf/d1-level/issues"
+  },
+  "keywords": ["abstract-level", "leveldb", "cloudflare", "d1", "sqlite", "workers", "serverless"]
+}
