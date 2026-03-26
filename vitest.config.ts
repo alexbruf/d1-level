@@ -22,7 +22,7 @@ export default defineConfig({
           include: ['test/workers.test.ts'],
           poolOptions: {
             workers: {
-              wrangler: { configPath: './wrangler.toml' },
+              wrangler: { configPath: './wrangler.jsonc' },
             },
           },
         },
